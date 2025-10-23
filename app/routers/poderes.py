@@ -19,7 +19,9 @@ def crear_poder(poder: schemas.PoderVotacionCreate, db: Session = Depends(get_db
     if not propietario:
         raise HTTPException(status_code=404, detail="Propietario no encontrado")
 
-    db_poder = models.PoderVotacion(**poder.dict(), fecha_votacion=poder.fecha_votacion or datetime.utcnow())
+    db_poder = models.PoderVotacion(**poder.dict())
+    if not db_poder.fecha_votacion:
+        db_poder.fecha_votacion = datetime.utcnow()
     db.add(db_poder)
     db.commit()
     db.refresh(db_poder)

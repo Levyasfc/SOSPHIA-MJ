@@ -3,22 +3,28 @@ from datetime import datetime
 from typing import Optional
 
 class ComunicacionCobroBase(BaseModel):
-    canal: str  
-    mensaje: str
-    fecha_envio: Optional[datetime] = None
-
-class ComunicacionCobroCreate(ComunicacionCobroBase):
     propietario_id: int
+    deuda_id: int
+    medio: str
+    mensaje: str
+    recibido: bool = False
+    autorizado_contacto: bool = False
 
+# Para creación
+class ComunicacionCobroCreate(ComunicacionCobroBase):
+    pass
+
+# Para actualización
+class ComunicacionCobroUpdate(BaseModel):
+    medio: Optional[str] = None
+    mensaje: Optional[str] = None
+    recibido: Optional[bool] = None
+    autorizado_contacto: Optional[bool] = None
+
+# Para respuesta
 class ComunicacionCobro(ComunicacionCobroBase):
     id: int
-    propietario_id: int
+    fecha_envio: datetime
 
     class Config:
         from_attributes = True
-
-
-class ComunicacionCobroUpdate(BaseModel):
-    canal: Optional[str] = None
-    mensaje: Optional[str] = None
-    fecha_envio: Optional[datetime] = None

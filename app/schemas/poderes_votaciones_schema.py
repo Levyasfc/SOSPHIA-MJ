@@ -12,6 +12,8 @@ class PoderVotacionBase(BaseModel):
 
 class PoderVotacionCreate(PoderVotacionBase):
     propietario_id: int
+    tipo: str
+    fecha_votacion: Optional[datetime] = None
 
 class PoderVotacion(PoderVotacionBase):
     id: int
