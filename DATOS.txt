@@ -1,0 +1,19 @@
+sudo service postgresql status,  Si dice algo como “postgresql: unrecognized service” o “inactive (dead)
+
+
+sudo apt update
+sudo apt install postgresql postgresql-contrib -y
+
+
+sudo service postgresql start
+
+sudo service postgresql status
+'''
+
+
+sudo su - postgres
+
+psql
+
+
+CREATE DATABASE MJSOSPHIA; CREATE USER levy WITH PASSWORD '1234'; ALTER ROLE levy SET client_encoding TO 'utf8'; ALTER ROLE levy SET default_transaction_isolation TO 'read committed'; ALTER ROLE levy SET timezone TO 'UTC'; GRANT ALL PRIVILEGES ON DATABASE MJSOSPHIA TO levy; \q
