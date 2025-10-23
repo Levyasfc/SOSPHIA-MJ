@@ -17,3 +17,10 @@ psql
 
 
 CREATE DATABASE MJSOSPHIA; CREATE USER levy WITH PASSWORD '1234'; ALTER ROLE levy SET client_encoding TO 'utf8'; ALTER ROLE levy SET default_transaction_isolation TO 'read committed'; ALTER ROLE levy SET timezone TO 'UTC'; GRANT ALL PRIVILEGES ON DATABASE MJSOSPHIA TO levy; \q
+
+
+
+
+\c mjsosphia
+GRANT ALL PRIVILEGES ON SCHEMA public TO levy;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO levy;
