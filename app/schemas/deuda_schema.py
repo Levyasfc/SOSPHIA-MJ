@@ -1,31 +1,35 @@
-from pydantic import BaseModel, condecimal
-from datetime import date, datetime
+from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
 
-Decimal = condecimal(max_digits=12, decimal_places=2)
-
+# Base con campos comunes
 class DeudaBase(BaseModel):
     propietario_id: int
-    concepto: str
-    monto: int
-    fecha_vencimiento: date
-    tasa_interes_anual: Optional[float] = 0.00
-    observaciones: Optional[str] = None
+    descripcion: Optional[str] = None
+    valor_original: float
+    interes_mora: Optional[float] = 0.0
+    valor_total: float
+    fecha_vencimiento: datetime
+    pagado: Optional[bool] = False
+    fecha_pago: Optional[datetime] = None
 
+# Para creación
 class DeudaCreate(DeudaBase):
     pass
 
-class DeudaResponse(DeudaBase):
+# Para actualización
+class DeudaUpdate(BaseModel):
+    descripcion: Optional[str] = None
+    valor_original: Optional[float] = None
+    interes_mora: Optional[float] = None
+    valor_total: Optional[float] = None
+    fecha_vencimiento: Optional[datetime] = None
+    pagado: Optional[bool] = None
+    fecha_pago: Optional[datetime] = None
+
+# Para respuesta
+class Deuda(DeudaBase):
     id: int
-    fecha_creacion: datetime
-    estado: str
 
     class Config:
-        from_attributes = True  
-
-class DeudaCalculoResponse(BaseModel):
-    id: int
-    monto_principal: float
-    dias_mora: int
-    interes_acumulado: float
-    monto_total_a_pagar: float
+        orm_mode = True

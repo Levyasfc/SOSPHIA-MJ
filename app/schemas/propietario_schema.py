@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
+from typing import Optional, List
 from datetime import datetime
-from typing import Optional
 
 class PropietarioBase(BaseModel):
     nombre: str
@@ -8,13 +8,19 @@ class PropietarioBase(BaseModel):
     telefono: Optional[str] = None
     propiedadID: int
     autorizacion_datos: Optional[bool] = False
-    fecha_autorizacion: Optional[datetime] = None
 
 class PropietarioCreate(PropietarioBase):
     pass
 
-class PropietarioResponse(PropietarioBase):
+class PropietarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    correo: Optional[EmailStr] = None
+    telefono: Optional[str] = None
+    autorizacion_datos: Optional[bool] = None
+
+class Propietario(PropietarioBase):
     id: int
+    fecha_autorizacion: Optional[datetime] = None
 
     class Config:
-        from_attributes = True  
+        from_attributes = True

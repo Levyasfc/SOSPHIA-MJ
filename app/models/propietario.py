@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
 class Propietario(Base):
     __tablename__ = "propietarios"
 
@@ -14,7 +15,7 @@ class Propietario(Base):
     autorizacion_datos = Column(Boolean, default=False)
     fecha_autorizacion = Column(DateTime, nullable=True, default=datetime.utcnow)
 
-    # Relaciones existentes
+    # Relaciones
     deudas = relationship("Deuda", back_populates="propietario", cascade="all, delete-orphan")
     comunicaciones = relationship("ComunicacionCobro", back_populates="propietario", cascade="all, delete-orphan")
     poderes_votaciones = relationship("PoderVotacion", back_populates="propietario", cascade="all, delete-orphan")
