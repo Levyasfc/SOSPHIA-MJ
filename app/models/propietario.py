@@ -9,9 +9,12 @@ class Propietario(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(150), nullable=False)
     correo = Column(String(150), nullable=False, index=True)
-    telefono = Column(String(20), nullable=True) 
+    telefono = Column(String(20), nullable=True)
     propiedadID = Column(Integer, nullable=False)
     autorizacion_datos = Column(Boolean, default=False)
     fecha_autorizacion = Column(DateTime, nullable=True, default=datetime.utcnow)
 
+    # Relaciones existentes
     deudas = relationship("Deuda", back_populates="propietario", cascade="all, delete-orphan")
+    comunicaciones = relationship("ComunicacionCobro", back_populates="propietario", cascade="all, delete-orphan")
+    poderes_votaciones = relationship("PoderVotacion", back_populates="propietario", cascade="all, delete-orphan")
