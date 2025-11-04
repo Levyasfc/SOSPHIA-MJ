@@ -1,28 +1,72 @@
-from datetime import datetime, time
+from datetime import datetime, timedelta
 from fastapi import HTTPException
-from app.utilidades.notificaciones import enviar_correo, enviar_whatsapp
+from sqlalchemy.orm import Session
+
+from app import models, schemas
+
 
 class ComunicacionService:
 
     @staticmethod
-    def validar_horario():
-        hora_actual = datetime.now().time()
-        inicio = time(8, 0)
-        fin = time(20, 0)
+    def crear_comunicacion(db: Session, data: schemas.ComunicacionCobroCreate):
+        # Validar que la deuda exista
+        deuda = db.query(models.Deuda).filter(models.Deuda.id == data.deuda_id).first()
+        if not deuda:
+            raise HTTPException(status_code=404, detail="La deuda no existe")
 
-        if not (inicio <= hora_actual <= fin):
-            raise HTTPException(status_code=400, detail="La comunicación solo puede enviarse entre 8am y 8pm (Ley 2300).")
+        # Validar que pertenece al propietario
+        if deuda.propietario_id != data.propietario_id:
+            raise HTTPException(status_code=400, detail="La deuda no pertenece al propietario")
+
+        # Verificar autorización de contacto
+        propietario = db.query(models.Propietario).filter(models.Propietario.id == data.propietario_id).first()
+        if not propietario.autorizado_contacto:
+            raise HTTPException(status_code=403, detail="El propietario no autorizó contacto")
+
+        # Evitar spam — 1 comunicación por día
+        ultima = (
+            db.query(models.ComunicacionCobro)
+            .filter(models.ComunicacionCobro.deuda_id == data.deuda_id)
+            .order_by(models.ComunicacionCobro.fecha_envio.desc())
+            .first()
+        )
+
+        if ultima and ultima.fecha_envio > datetime.utcnow() - timedelta(hours=24):
+            raise HTTPException(status_code=429, detail="Solo se permite una comunicación cada 24 horas")
+
+        nueva = models.ComunicacionCobro(
+            propietario_id=data.propietario_id,
+            deuda_id=data.deuda_id,
+            medio=data.medio,
+            mensaje=data.mensaje,
+            recibido=data.recibido,
+            autorizado_contacto=True,
+        )
+
+        db.add(nueva)
+        db.commit()
+        db.refresh(nueva)
+        return nueva
+
 
     @staticmethod
-    def validar_autorizacion_contacto(propietario):
-        if not propietario.autoriza_contacto:
-            raise HTTPException(status_code=400, detail="El propietario no ha autorizado contacto.")
+    def obtener_comunicaciones(db: Session):
+        return db.query(models.ComunicacionCobro).all()
+
 
     @staticmethod
-    def enviar_notificacion(medio, propietario, mensaje):
-        if medio == "email":
-            enviar_correo(propietario.email, mensaje)
-        elif medio == "whatsapp":
-            enviar_whatsapp(propietario.telefono, mensaje)
-        else:
-            pass  # Registrar sin enviar
+    def obtener_historial_por_propietario(db: Session, propietario_id: int):
+        return (
+            db.query(models.ComunicacionCobro)
+            .filter(models.ComunicacionCobro.propietario_id == propietario_id)
+            .all()
+        )
+
+
+    @staticmethod
+    def obtener_historial_por_deuda(db: Session, deuda_id: int):
+        return (
+            db.query(models.ComunicacionCobro)
+            .filter(models.ComunicacionCobro.deuda_id == deuda_id)
+            .all()
+        )

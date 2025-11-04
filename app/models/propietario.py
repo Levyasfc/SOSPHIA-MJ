@@ -18,4 +18,5 @@ class Propietario(Base):
     # Relaciones
     deudas = relationship("Deuda", back_populates="propietario", cascade="all, delete-orphan")
     comunicaciones = relationship("ComunicacionCobro", back_populates="propietario", cascade="all, delete-orphan")
-    poderes_votaciones = relationship("PoderVotacion", back_populates="propietario", cascade="all, delete-orphan")
+    poderes_otorgados = relationship("Poder", foreign_keys="Poder.otorgante_id", back_populates="otorgante", cascade="all, delete-orphan")
+    poderes_recibidos = relationship("Poder", foreign_keys="Poder.apoderado_id", back_populates="apoderado", cascade="all, delete-orphan")
