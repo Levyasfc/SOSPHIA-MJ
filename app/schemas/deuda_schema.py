@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
@@ -33,3 +34,5 @@ class Deuda(DeudaBase):
 
     class Config:
         from_attributes = True
+
+Deuda.model_rebuild()

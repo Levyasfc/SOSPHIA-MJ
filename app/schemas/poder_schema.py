@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from datetime import date
 from typing import Optional
@@ -16,3 +17,5 @@ class Poder(PoderBase):
 
     class Config:
         from_attributes = True
+
+Poder.model_rebuild()

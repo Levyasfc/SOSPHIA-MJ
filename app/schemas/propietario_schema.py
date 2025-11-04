@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
@@ -24,3 +25,5 @@ class Propietario(PropietarioBase):
 
     class Config:
         from_attributes = True
+
+Propietario.model_rebuild()

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
@@ -18,3 +19,5 @@ class Votacion(VotacionBase):
 
     class Config:
         from_attributes = True
+
+Votacion.model_rebuild()

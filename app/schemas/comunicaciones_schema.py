@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
@@ -28,3 +29,5 @@ class ComunicacionCobro(ComunicacionCobroBase):
 
     class Config:
         from_attributes = True
+
+ComunicacionCobro.model_rebuild()

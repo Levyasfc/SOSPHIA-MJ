@@ -4,6 +4,7 @@ sqlalchemy
 psycopg2-binary
 python-dotenv
 pydantic
+alembic
 
 # iniciar con uvicorn app.main:app --reload
 

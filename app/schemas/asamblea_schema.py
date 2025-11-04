@@ -1,6 +1,8 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from __future__ import annotations
 from datetime import datetime
+from typing import Optional, List
+from .votacion_schema import Votacion
+from pydantic import BaseModel
 
 class AsambleaBase(BaseModel):
     fecha: Optional[datetime] = None
@@ -13,7 +15,10 @@ class AsambleaCreate(AsambleaBase):
 
 class Asamblea(AsambleaBase):
     id: int
-    votaciones: Optional[List["Votacion"]] = []
+    votaciones: Optional[List["Votacion"]] = None 
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
+
+Asamblea.model_rebuild()
