@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import BackgroundTasks, HTTPException
 from app import models, schemas
-from datetime import datetime
+from datetime import datetime, timezone
 from app.utilidades.correos import enviar_email
 from app.common.plantillas.deudas import mensaje_deuda
 
@@ -11,7 +11,7 @@ class DeudasService:
     def crear_deuda(db: Session, data: schemas.DeudaCreate, background_tasks: BackgroundTasks):
         
 
-        hoy = datetime.datetime.now(datetime.timezone.utc).date() 
+        hoy = datetime.now(timezone.utc).date() 
         fecha_vencimiento = data.fecha_vencimiento.date()
 
         valor_original = data.valor_original
@@ -22,7 +22,7 @@ class DeudasService:
             dias_mora = (hoy - fecha_vencimiento).days
 
             if tasa_interes_mora > 0:
-                 valor_intereses = valor_original * dias_mora * (tasa_interes_mora / 100)
+                 valor_intereses = valor_original * (dias_mora/30) * (tasa_interes_mora / 100)
             
             valor_total_calculado = valor_original + valor_intereses
         else:
