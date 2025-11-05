@@ -1,15 +1,24 @@
 from app import models, schemas
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
+
+from app.utilidades.correos import enviar_email
+from app.common.plantillas.usuario import mensaje_nuevo_propietario
 
 class PropietarioService:
 
     @staticmethod
-    def crear_propietario(db: Session, data: schemas.PropietarioCreate):
+    def crear_propietario(db: Session, data: schemas.PropietarioCreate, background_tasks: BackgroundTasks):
         propietario = models.Propietario(**data.dict())
         db.add(propietario)
         db.commit()
         db.refresh(propietario)
+
+        if propietario.correo and propietario.autorizacion_datos:
+            asunto = "✅ Registro exitoso en la SOSPHIA!!"
+            mensaje = mensaje_nuevo_propietario(propietario)
+            background_tasks.add_task(enviar_email, propietario.correo, asunto, mensaje)
+
         return propietario
 
     @staticmethod

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -9,8 +9,12 @@ router = APIRouter(prefix="/deudas", tags=["Deudas"])
 
 
 @router.post("/", response_model=schemas.Deuda)
-def crear_deuda(data: schemas.DeudaCreate, db: Session = Depends(get_db)):
-    return DeudasService.crear_deuda(db, data)
+def crear_deuda(
+    data: schemas.DeudaCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    return DeudasService.crear_deuda(db, data, background_tasks)
 
 
 @router.get("/", response_model=list[schemas.Deuda])

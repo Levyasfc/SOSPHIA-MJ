@@ -5,6 +5,7 @@ psycopg2-binary
 python-dotenv
 pydantic
 alembic
+fastapi-mail
 
 # iniciar con uvicorn app.main:app --reload
 

@@ -1,12 +1,16 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from app import models, schemas
+from fastapi import HTTPException, BackgroundTasks
 from datetime import datetime
+from typing import List
+
+from app import models, schemas
+from app.utilidades.correos import enviar_email
+from app.common.plantillas.asamblea import mensaje_nueva_asamblea
 
 class AsambleaService:
 
     @staticmethod
-    def crear_asamblea(db: Session, data: schemas.AsambleaCreate):
+    def crear_asamblea(db: Session, data: schemas.AsambleaCreate, background_tasks: BackgroundTasks):
         asamblea = models.Asamblea(
             fecha=data.fecha or datetime.utcnow(),
             tipo=data.tipo,
@@ -16,6 +20,17 @@ class AsambleaService:
         db.add(asamblea)
         db.commit()
         db.refresh(asamblea)
+
+        propietarios = db.query(models.Propietario).filter(models.Propietario.autorizacion_datos == True).all()
+        emails = [p.correo for p in propietarios if p.correo]
+
+       
+        asunto = f"📢 Nueva Asamblea: {asamblea.tipo}"
+        mensaje = mensaje_nueva_asamblea(asamblea)
+
+        for email in emails:
+            background_tasks.add_task(enviar_email, email, asunto, mensaje)
+
         return asamblea
 
     @staticmethod

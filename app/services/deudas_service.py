@@ -1,42 +1,52 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from datetime import datetime
-
+from fastapi import BackgroundTasks, HTTPException
 from app import models, schemas
-
+from datetime import datetime
+from app.utilidades.correos import enviar_email
+from app.common.plantillas.deudas import mensaje_deuda
 
 class DeudasService:
 
     @staticmethod
-    def crear_deuda(db: Session, data: schemas.DeudaCreate):
-        # Validar propietario
-        propietario = db.query(models.Propietario).filter_by(id=data.propietario_id).first()
-        if not propietario:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="El propietario no existe"
-            )
+    def crear_deuda(db: Session, data: schemas.DeudaCreate, background_tasks: BackgroundTasks):
+        
 
-        if data.valor_original <= 0:
-            raise HTTPException(status_code=400, detail="El valor debe ser mayor a 0")
+        hoy = datetime.datetime.now(datetime.timezone.utc).date() 
+        fecha_vencimiento = data.fecha_vencimiento.date()
 
-        # Calcular valor total inicial
-        valor_total = data.valor_original + (data.interes_mora or 0)
+        valor_original = data.valor_original
+        tasa_interes_mora = data.interes_mora
+        valor_intereses = 0.0
+        
+        if hoy > fecha_vencimiento:
+            dias_mora = (hoy - fecha_vencimiento).days
 
-        nueva_deuda = models.Deuda(
-            propietario_id=data.propietario_id,
-            descripcion=data.descripcion,
-            valor_original=data.valor_original,
-            interes_mora=data.interes_mora or 0,
-            valor_total=valor_total,
-            fecha_vencimiento=data.fecha_vencimiento,
-            pagado=False
-        )
+            if tasa_interes_mora > 0:
+                 valor_intereses = valor_original * dias_mora * (tasa_interes_mora / 100)
+            
+            valor_total_calculado = valor_original + valor_intereses
+        else:
+            valor_total_calculado = valor_original
+            
+        valor_total_calculado = round(valor_total_calculado, 2)
 
-        db.add(nueva_deuda)
+
+        datos_deuda = data.dict()
+        datos_deuda['valor_total'] = valor_total_calculado
+        
+        deuda = models.Deuda(**datos_deuda)
+        db.add(deuda)
         db.commit()
-        db.refresh(nueva_deuda)
-        return nueva_deuda
+        db.refresh(deuda)
+
+        propietario = db.query(models.Propietario).filter(models.Propietario.id == deuda.propietario_id).first()
+
+        if propietario and propietario.correo:
+            asunto = "💰 Nueva deuda registrada"
+            mensaje = mensaje_deuda(propietario, deuda)
+            background_tasks.add_task(enviar_email, propietario.correo, asunto, mensaje)
+
+        return deuda
 
     @staticmethod
     def obtener_deudas(db: Session):

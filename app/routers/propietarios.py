@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -8,8 +8,12 @@ from app.services.propietario_service import PropietarioService
 router = APIRouter(prefix="/propietarios", tags=["Propietarios"])
 
 @router.post("/", response_model=schemas.Propietario)
-def crear_propietario(data: schemas.PropietarioCreate, db: Session = Depends(get_db)):
-    return PropietarioService.crear_propietario(db, data)
+def crear_propietario(
+    data: schemas.PropietarioCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    return PropietarioService.crear_propietario(db, data, background_tasks)
 
 @router.get("/", response_model=List[schemas.Propietario])
 def obtener_propietarios(db: Session = Depends(get_db)):

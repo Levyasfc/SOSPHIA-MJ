@@ -9,7 +9,6 @@ class DeudaBase(BaseModel):
     descripcion: Optional[str] = None
     valor_original: float
     interes_mora: Optional[float] = 0.0
-    valor_total: float
     fecha_vencimiento: datetime
     pagado: Optional[bool] = False
     fecha_pago: Optional[datetime] = None
