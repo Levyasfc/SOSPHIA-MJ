@@ -1,11 +1,10 @@
-# app/utilidades/correos.py
 import os
 import ssl
 import asyncio
 from email.message import EmailMessage
 from typing import Optional
 
-#Instancias para mensajes
+#INSTANCIAS DE CONFIGURACIÓN DE CORREO
 
 MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
 MAIL_PORT = int(os.getenv("MAIL_PORT", "587"))        

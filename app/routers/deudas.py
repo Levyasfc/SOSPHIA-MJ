@@ -35,3 +35,13 @@ def actualizar_deuda(deuda_id: int, data: schemas.DeudaUpdate, db: Session = Dep
 @router.delete("/{deuda_id}")
 def eliminar_deuda(deuda_id: int, db: Session = Depends(get_db)):
     return DeudasService.eliminar_deuda(db, deuda_id)
+
+
+
+
+'''
+@router.post("/{deuda_id}/juridico")
+def escalar_a_juridico(deuda_id: int, db: Session = Depends(get_db)):
+    return JuridicoService.crear_caso(db, deuda_id)
+
+'''
