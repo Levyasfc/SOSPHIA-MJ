@@ -6,6 +6,7 @@ python-dotenv
 pydantic
 alembic
 fastapi-mail
+APScheduler
 
 # iniciar con uvicorn app.main:app --reload
 

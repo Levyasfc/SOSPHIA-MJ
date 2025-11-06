@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from apscheduler.schedulers.background import BackgroundScheduler
 from app.common.plantillas.mensaje_deuda_vencida import mensaje_deuda_vencida
 from sqlalchemy.orm import Session
 from fastapi import BackgroundTasks
@@ -42,4 +43,11 @@ def revisar_deudas_vencidas(background_tasks: BackgroundTasks = None):
 
     db.commit()
     db.close()
+
+
+def iniciar_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(revisar_deudas_vencidas, 'cron', hour=6, minute=0)
+    scheduler.start()
+    print("🕕 Scheduler iniciado: revisión diaria de deudas a las 6:00 AM")
 
