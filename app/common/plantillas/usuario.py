@@ -2,7 +2,7 @@ from app.common.plantillas.Plantillabase import base_template
 
 def mensaje_nuevo_propietario(propietario):
     contenido = f"""
-¡Bienvenido a la plataforma de Propiedad Horizontal!
+¡Bienvenido a la plataforma de SOSPHIA!!
 
 Se ha registrado tu usuario exitosamente.
 
