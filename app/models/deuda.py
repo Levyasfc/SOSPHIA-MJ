@@ -18,5 +18,3 @@ class Deuda(Base):
     fecha_vencimiento = Column(DateTime, nullable=False)
     fecha_pago = Column(DateTime, nullable=True)
     pagado = Column(Boolean, default=False)
-
-    comunicaciones = relationship("ComunicacionCobro", back_populates="deuda", cascade="all, delete-orphan")
