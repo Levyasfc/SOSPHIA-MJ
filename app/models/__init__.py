@@ -1,4 +1,4 @@
-
+from .voto import Voto
 from .deuda import Deuda
 from .poder import Poder
 from .asamblea import Asamblea
