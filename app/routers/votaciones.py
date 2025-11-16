@@ -6,7 +6,7 @@ from app.database import get_db
 from app import schemas
 from app.services.votacion_service import VotacionService
 
-router = APIRouter(prefix="/votaciones", tags=["Votaciones"])
+router = APIRouter(prefix="/{hp_id}/votaciones", tags=["Votaciones"])
 
 @router.post("/", response_model=schemas.Votacion)
 def crear_votacion(data: schemas.VotacionCreate, db: Session = Depends(get_db)):

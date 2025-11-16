@@ -6,12 +6,10 @@ from typing import Optional
 # Base con campos comunes
 class DeudaBase(BaseModel):
     propietario_id: int
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
     valor_original: float
-    interes_mora: Optional[float] = 0.0
+    interes_mora: float
     fecha_vencimiento: datetime
-    pagado: Optional[bool] = False
-    fecha_pago: Optional[datetime] = None
 
 # Para creación
 class DeudaCreate(DeudaBase):
@@ -33,5 +31,13 @@ class Deuda(DeudaBase):
 
     class Config:
         from_attributes = True
+
+class DeudaCreateSinHP(BaseModel):
+    propietario_id: int
+    descripcion: str | None = None
+    valor_original: float
+    interes_mora: float
+    fecha_vencimiento: datetime
+
 
 Deuda.model_rebuild()

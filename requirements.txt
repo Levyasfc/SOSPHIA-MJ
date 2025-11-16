@@ -8,6 +8,7 @@ pydantic
 alembic
 fastapi-mail
 APScheduler
+httpx
 
 # iniciar con uvicorn app.main:app --reload
 

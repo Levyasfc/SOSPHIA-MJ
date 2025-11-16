@@ -1,10 +1,14 @@
 from app.common.plantillas.Plantillabase import base_template
 
-def mensaje_deuda(propietario, deuda):
+def mensaje_deuda(usuario, deuda):
     titulo = "Nueva deuda registrada"
 
+    # Hacer seguro si faltan campos
+    nombre = usuario.get("nombre", "Propietario")
+    apellido = usuario.get("apellido", "")
+
     contenido = f"""
-Hola {propietario.nombre},
+Hola {nombre} {apellido},
 
 Se ha registrado una nueva deuda a su nombre:
 

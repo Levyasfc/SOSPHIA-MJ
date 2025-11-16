@@ -1,1 +1,1 @@
-__all__ = ["propietarios", "deudas"]
+__all__ = ["deudas"]

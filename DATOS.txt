@@ -24,3 +24,6 @@ CREATE USER levyasfc WITH PASSWORD '1234'; ALTER ROLE levyasfc SET client_encodi
 \c mjsosphia
 GRANT ALL PRIVILEGES ON SCHEMA public TO levyasfc;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO levyasfc;
+
+sudo service postgresql start
+

@@ -8,6 +8,7 @@ class Asamblea(Base):
     __tablename__ = "asambleas"
 
     id = Column(Integer, primary_key=True, index=True)
+    hp_id = Column(Integer, nullable=False)
     fecha = Column(DateTime, nullable=False, default=datetime.utcnow)
     tipo = Column(String(50), nullable=False)  # ej: "ordinaria", "extraordinaria"
     descripcion = Column(Text, nullable=True)

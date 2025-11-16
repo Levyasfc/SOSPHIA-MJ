@@ -6,7 +6,7 @@ from app.database import get_db
 from app import schemas
 from app.services.poder_service import PoderService
 
-router = APIRouter(prefix="/poderes", tags=["Poderes"])
+router = APIRouter(prefix="/{hp_id}/poderes", tags=["Poderes"])
 
 @router.post("/", response_model=schemas.Poder)
 def crear_poder(data: schemas.PoderCreate, db: Session = Depends(get_db)):
