@@ -5,7 +5,7 @@ from app.database import engine, Base
 from app import models
 from app.utilidades.recordatoriosAuto import iniciar_scheduler
 
-from app.routers import deudas, poderes, asambleas, votaciones
+from app.routers import deudas, poderes, asambleas, votaciones, casos_juridicos
 
 app = FastAPI(title="Servicio MODULOJurídico SOSPHIA", version="3.0")
 
@@ -109,3 +109,4 @@ app.include_router(deudas.router)
 app.include_router(poderes.router)
 app.include_router(asambleas.router)
 app.include_router(votaciones.router)
+app.include_router(casos_juridicos.router)
