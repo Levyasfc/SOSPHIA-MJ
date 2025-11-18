@@ -3,7 +3,7 @@ name: Deploy FastAPI to Azure
 on:
   push:
     branches:
-      - main       
+      - main
   workflow_dispatch:
 
 jobs:
@@ -31,9 +31,6 @@ jobs:
           cp -r app package/
           cp requirements.txt package/
           cp startup.txt package/
-
-      - name: Zip artifact for deployment
-        run: |
           cd package
           zip -r ../app.zip .
 
