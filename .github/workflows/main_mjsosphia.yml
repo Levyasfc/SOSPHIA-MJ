@@ -10,7 +10,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,7 +19,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install dependencies locally
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -28,10 +27,18 @@ jobs:
       - name: Prepare deployment package
         run: |
           rm -rf package
-          mkdir package
+          rm -f app.zip
+          mkdir -p package
+
+          # copiar solo código + requirements
           cp -r app package/
           cp requirements.txt package/
           cp startup.txt package/
+          cp alembic.ini package/
+          cp -r migrations package/
+
+      - name: Create zip file
+        run: |
           cd package
           zip -r ../app.zip .
 
@@ -39,6 +46,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "MJSOSPHIA-API"
-          slot-name: "production"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: "app.zip"
