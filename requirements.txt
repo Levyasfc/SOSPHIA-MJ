@@ -1,5 +1,5 @@
 fastapi
-uvicorn[standard]
+uvicorn
 gunicorn
 
 SQLAlchemy>=2.0
@@ -15,6 +15,21 @@ alembic
 fastapi-mail
 APScheduler
 httpx
+requests
+email-validator
+
+fastapi
+uvicorn
+gunicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pydantic
+alembic
+fastapi-mail
+APScheduler
+httpx
+asyncpg
 requests
 email-validator
 
