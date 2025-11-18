@@ -24,10 +24,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Prepare deployment package
+        run: |
+          rm -rf package
+          mkdir package
+          cp -r app package/
+          cp requirements.txt package/
+          cp startup.txt package/
+
       - name: Zip artifact for deployment
         run: |
-          mkdir -p package
-          cp -r * package
           cd package
           zip -r ../app.zip .
 
