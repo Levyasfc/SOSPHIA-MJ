@@ -6,14 +6,24 @@ from app import models, schemas
 from app.utilidades.correos import enviar_email
 from app.common.plantillas.asamblea import mensaje_nueva_asamblea
 from app.common.Utilidades.clientes import obtener_usuario_externo
+from app.common.Utilidades.permisos import validar_rol, validar_pertenencia_ph
 
 
 class AsambleaService:
 
     @staticmethod
-    async def crear_asamblea(db: Session, data: schemas.AsambleaCreate, hp_id: int, background_tasks: BackgroundTasks):
+    async def crear_asamblea(
+        db: Session,
+        hp_id: int,
+        data: schemas.AsambleaCreate,
+        usuario: dict,
+        background_tasks: BackgroundTasks
+    ):
+        
+        validar_pertenencia_ph(usuario, hp_id)
 
-        # Crear asamblea
+        validar_rol(usuario, ["ADMINISTRADOR", "ADMINISTRADOR INMOBILIARIO"])
+
         asamblea = models.Asamblea(
             hp_id=hp_id,
             fecha=data.fecha or datetime.utcnow(),
@@ -26,18 +36,18 @@ class AsambleaService:
         db.commit()
         db.refresh(asamblea)
 
-        # Obtener usuarios de la PH
         usuarios = await obtener_usuario_externo(hp_id)
+        if not usuarios:
+            return asamblea  
 
-        # Filtrar SOLO usuarios con email
-        emails = [u["email"] for u in usuarios if u.get("email")]
+        correos = [u["email"] for u in usuarios if u.get("email")]
 
-        # Enviar correos
-        asunto = f"📢 Nueva Asamblea: {asamblea.tipo}"
-        mensaje = mensaje_nueva_asamblea(asamblea)
+        if correos:
+            asunto = f"📢 Nueva Asamblea: {asamblea.tipo}"
+            mensaje = mensaje_nueva_asamblea(asamblea)
 
-        for correo in emails:
-            background_tasks.add_task(enviar_email, correo, asunto, mensaje)
+            for email in correos:
+                background_tasks.add_task(enviar_email, email, asunto, mensaje)
 
         return asamblea
 

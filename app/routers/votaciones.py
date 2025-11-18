@@ -5,6 +5,8 @@ from typing import List
 from app.database import get_db
 from app import schemas
 from app.services.votacion_service import VotacionService
+from app.common.Utilidades.usuarios import get_current_user
+from app.common.Utilidades.permisos import validar_rol, validar_pertenencia_ph
 
 router = APIRouter(prefix="/{hp_id}/votaciones", tags=["Votaciones"])
 
@@ -16,26 +18,26 @@ def crear_votacion(
 ):
     return VotacionService.crear_votacion(db, data, hp_id)
 
-@router.post("/{votacion_id}/votar", response_model=schemas.Votacion)
+@router.post("/{votacion_id}/votar")
 async def votar(
     hp_id: int,
     votacion_id: int,
-    usuario_id: int,
-    favor: int = 0,
-    contra: int = 0,
-    abstencion: int = 0,
+    voto: str,
     db: Session = Depends(get_db),
-    background_tasks: BackgroundTasks = None
+    usuario: dict = Depends(get_current_user)
 ):
-    return await VotacionService.votar(
+    validar_pertenencia_ph(usuario, hp_id)
+
+    voto = voto.upper()
+    if voto not in ["FAVOR", "CONTRA", "ABSTENCION"]:
+        raise HTTPException(400, "El voto debe ser FAVOR / CONTRA / ABSTENCION")
+
+    return VotacionService.votar(
         db=db,
         votacion_id=votacion_id,
         hp_id=hp_id,
-        usuario_id=usuario_id,
-        favor=favor,
-        contra=contra,
-        abstencion=abstencion,
-        background_tasks=background_tasks
+        usuario_id=usuario["user_id"],
+        voto=voto
     )
 
 @router.get("/", response_model=List[schemas.Votacion])

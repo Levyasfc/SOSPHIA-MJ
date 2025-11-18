@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import schemas
 from app.services.asamblea_service import AsambleaService
+from app.common.Utilidades.usuarios import get_current_user
 
 router = APIRouter(prefix="/{hp_id}/asambleas", tags=["Asambleas"])
 
@@ -10,10 +11,13 @@ router = APIRouter(prefix="/{hp_id}/asambleas", tags=["Asambleas"])
 async def crear_asamblea(
     hp_id: int,
     data: schemas.AsambleaCreate,
+    usuario = Depends(get_current_user),  
     db: Session = Depends(get_db),
-    background_tasks: BackgroundTasks = BackgroundTasks(),
+    background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    return await AsambleaService.crear_asamblea(db, data, hp_id, background_tasks)
+    return await AsambleaService.crear_asamblea(
+        db, hp_id, data, usuario, background_tasks
+    )
 
 
 @router.get("/", response_model=list[schemas.Asamblea])
