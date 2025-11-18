@@ -20,5 +20,5 @@ class CasoJuridico(CasoJuridicoBase):
     historial: list[HistorialJuridico] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
