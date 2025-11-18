@@ -1,24 +1,27 @@
-from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from app.schemas.historial_juridico_schema import HistorialJuridico
-
-class CasoJuridicoBase(BaseModel):
-    titulo: str
-    descripcion: str | None = None
+from datetime import datetime
+from .historial_juridico_schema import HistorialJuridico
 
 
-class CasoJuridicoCreate(CasoJuridicoBase):
-    pass
+class CasoJuridicoCreate(BaseModel):
+    motivo: str
+    deuda_id: int
+    notificar: bool = False
+    correo_responsable: Optional[EmailStr] = None
 
 
-class CasoJuridico(CasoJuridicoBase):
+class CasoJuridico(BaseModel):
     id: int
     hp_id: int
+    deuda_id: int
     estado: str
-    fecha_creacion: datetime
-    historial: list[HistorialJuridico] = []
+    motivo: Optional[str]
+    abogado: Optional[str]
+    fecha_inicio: datetime
+    fecha_cierre: Optional[datetime]
+
+    historial: List[HistorialJuridico] = []
 
     class Config:
         from_attributes = True
-

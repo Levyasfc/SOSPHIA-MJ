@@ -1,21 +1,20 @@
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
-from typing import Optional, List
 
-class HistorialJuridicoBase(BaseModel):
+
+class HistorialJuridicoCreate(BaseModel):
     descripcion: str
+    notificar: bool = False
+    correo_responsable: Optional[EmailStr] = None
 
 
-class HistorialJuridicoCreate(HistorialJuridicoBase):
-    pass
-
-
-class HistorialJuridico(HistorialJuridicoBase):
+class HistorialJuridico(BaseModel):
     id: int
     caso_id: int
+    descripcion: str
     usuario: str
     fecha: datetime
 
     class Config:
         from_attributes = True
-
