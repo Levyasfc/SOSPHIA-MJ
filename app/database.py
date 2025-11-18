@@ -1,28 +1,24 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
 import os
 
-# Cargar las variables del archivo .env
-load_dotenv()
-
-# Obtener la URL de conexión desde el .env
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Crear el motor de conexión
-engine = create_engine(DATABASE_URL)
+engine = create_async_engine(
+    DATABASE_URL,
+    connect_args={"sslmode": "require"}
+)
 
-# Crear la sesión local
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    expire_on_commit=False,
+    bind=engine,
+    class_=AsyncSession
+)
 
-# Base de modelos
 Base = declarative_base()
 
-
-# Dependencia para obtener la sesión de la base de datos
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    async with SessionLocal() as session:
+        yield session

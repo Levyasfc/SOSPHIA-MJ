@@ -1,16 +1,22 @@
 fastapi
-uvicorn
+uvicorn[standard]
 gunicorn
-sqlalchemy
+
+SQLAlchemy>=2.0
+asyncpg
 psycopg2-binary
+
 python-dotenv
 pydantic
+pydantic[email]
+
 alembic
+
 fastapi-mail
 APScheduler
 httpx
-
-# iniciar con uvicorn app.main:app --reload
+requests
+email-validator
 
 #Iniciar en codespaces uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
