@@ -1,0 +1,38 @@
+name: Deploy to Azure Web App - MJSOSPHIA-API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to Azure Container Registry
+      run: |
+        az acr login --name mjsosphiaacr
+
+    - name: Build Docker image
+      run: |
+        docker build -t mjsosphiaacr.azurecr.io/mjsosphiapi:latest .
+
+    - name: Push image to ACR
+      run: |
+        docker push mjsosphiaacr.azurecr.io/mjsosphiapi:latest
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: MJSOSPHIA-API
+        images: mjsosphiaacr.azurecr.io/mjsosphiapi:latest
