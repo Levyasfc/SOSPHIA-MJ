@@ -1,4 +1,4 @@
-name: Deploy FastAPI to Azure
+name: build-and-deploy
 
 on:
   push:
@@ -24,15 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create clean deployment package
+      - name: Zip artifact
         run: |
-          mkdir package
-          mkdir package/app
-          cp -r app/* package/app/
-          cp requirements.txt package/
-          cp startup.txt package/
-          cd package
-          zip -r ../app.zip .
+          zip -r app.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
