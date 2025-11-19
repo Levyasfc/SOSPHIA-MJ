@@ -1,6 +1,6 @@
 import httpx
 
-API_EXTERN_BASE = "http://34.201.187.167/view/users"
+API_EXTERN_BASE = "http://34.201.187.167/api/core/view/users"
 
 async def obtener_usuario_externo(hp_id: int):
     url = f"{API_EXTERN_BASE}/{hp_id}"
