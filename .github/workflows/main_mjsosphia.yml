@@ -24,7 +24,7 @@ jobs:
           cp DATOS.txt package/ || true
 
           cd package
-          zip -r ../app.zip .
+          zip -r app.zip app migrations alembic.ini requirements.txt DATOS.txt application.py
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
