@@ -14,9 +14,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Zip artifact
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
         run: |
-          zip -r app.zip .
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create clean deployment package
+        run: |
+          mkdir package
+          mkdir package/app
+          cp -r app/* package/app/
+          cp requirements.txt package/
+          cp startup.txt package/
+          cd package
+          zip -r ../app.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
