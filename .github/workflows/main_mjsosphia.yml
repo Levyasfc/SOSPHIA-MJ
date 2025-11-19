@@ -4,39 +4,37 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - name: Install dependencies into build folder
+      - name: Install dependencies locally into site_packages
         run: |
-          mkdir build
           python -m pip install --upgrade pip
-          pip install -r requirements.txt -t build/
+          pip install -r requirements.txt -t ./site_packages
 
-      - name: Copy application files
+      - name: Prepare ZIP package
         run: |
-          cp -r app build/
-          cp -r migrations build/
-          cp alembic.ini build/
-          cp requirements.txt build/
-          cp application.py build/
-          cp DATOS.txt build/
+          mkdir package
+          cp -r app package/
+          cp -r migrations package/
+          cp alembic.ini package/
+          cp requirements.txt package/
+          cp application.py package/
+          cp DATOS.txt package/
+          cp -r site_packages/* package/
 
-      - name: Create ZIP artifact
-        run: |
-          cd build
+          cd package
           zip -r ../app.zip .
 
       - name: Upload artifact
@@ -45,12 +43,7 @@ jobs:
           name: app
           path: app.zip
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: Download build artifact
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: app
