@@ -11,6 +11,10 @@ app = FastAPI(title="Servicio MODULOJurídico SOSPHIA", version="3.0")
 
 #Base.metadata.create_all(bind=engine)
 
+@app.get("/")
+def home():
+    return {"message": "OK"}
+
 @app.get("/", response_class=HTMLResponse)
 def home():
     return """
