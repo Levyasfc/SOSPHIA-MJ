@@ -1,4 +1,4 @@
-name: build-and-deploy
+name: Deploy FastAPI to Azure
 
 on:
   push:
@@ -14,21 +14,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Create deployment package
-        run: |
-          mkdir package
-          cp -r app package/
-          cp -r migrations package/ || true
-          cp alembic.ini package/
-          cp requirements.txt package/
-          cp DATOS.txt package/ || true
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-          cd package
-          zip -r app.zip app migrations alembic.ini requirements.txt DATOS.txt application.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create deployment ZIP
+        run: |
+          echo "📦 Creating clean deployment package..."
+          rm -f app.zip
+          zip -r app.zip \
+            app \
+            migrations \
+            alembic.ini \
+            requirements.txt \
+            application.py \
+            DATOS.txt
+
+          echo "ZIP created:"
+          ls -lh app.zip
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "mjsosphia-api"
+          app-name: "MJSOSPHIA-API"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: "app.zip"
