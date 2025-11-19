@@ -14,23 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
+      - name: Zip artifact for Azure
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Zip artifact
-        run: |
-          zip -r app.zip .
+          zip -r app.zip . -x "*.git*" -x "*.github/*" -x "*.devcontainer/*" -x "*.vscode/*"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "MJSOSPHIA-API"
+          app-name: "mjsosphia-api"   # <-- tu nombre real del app service
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: "app.zip"
