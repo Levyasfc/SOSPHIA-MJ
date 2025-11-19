@@ -1,3 +1,5 @@
+from app.database import Base
+
 from .deuda import Deuda
 from .poder import Poder
 from .asamblea import Asamblea

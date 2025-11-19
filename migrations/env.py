@@ -1,18 +1,30 @@
+from __future__ import with_statement
+import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+
+from sqlalchemy import engine_from_config, pool
 from alembic import context
 
-# --- IMPORTANTE: IMPORTAR Base y TODOS LOS MODELOS ---
-from app.database import Base
-from app import models
+# ⬇️ Cargar variables de entorno (.env)
+from dotenv import load_dotenv
+load_dotenv()
 
-# This is the Alembic Config object
+# Alembic config
 config = context.config
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+# ⬇️ Obtener DATABASE_URL desde entorno
+database_url = os.getenv("DATABASE_URL")
+if not database_url:
+    raise Exception("DATABASE_URL no está definida en el entorno")
 
+# ⬇️ Sobrescribir sqlalchemy.url de alembic.ini
+config.set_main_option("sqlalchemy.url", database_url)
+
+# Log config
+fileConfig(config.config_file_name)
+
+# ⬇️ Importar Base desde el archivo correcto
+from app.database import Base
 
 target_metadata = Base.metadata
 
