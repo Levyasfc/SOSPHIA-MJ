@@ -14,13 +14,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Zip artifact for Azure
+      - name: Create deployment package
         run: |
-          zip -r app.zip . -x "*.git*" -x "*.github/*" -x "*.devcontainer/*" -x "*.vscode/*"
+          mkdir package
+          cp -r app package/
+          cp -r migrations package/ || true
+          cp alembic.ini package/
+          cp requirements.txt package/
+          cp DATOS.txt package/ || true
+
+          cd package
+          zip -r ../app.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "mjsosphia-api"   # <-- tu nombre real del app service
+          app-name: "mjsosphia-api"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: "app.zip"
