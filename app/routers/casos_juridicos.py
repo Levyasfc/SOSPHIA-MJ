@@ -49,6 +49,23 @@ async def tomar_caso(
         abogado_email=usuario["email"]
     )
 
+@router.put("/{caso_id}/cerrar", response_model=schemas.CasoJuridico)
+async def cerrar_caso(
+    hp_id: int,
+    caso_id: int,
+    db: Session = Depends(get_db),
+    usuario: dict = Depends(get_current_user)
+):
+    validar_pertenencia_ph(usuario, hp_id)
+    validar_rol(usuario, ["ABOGADO", "ADMINISTRADOR"])
+
+    return await CasosJuridicosService.cerrar_caso(
+        db=db,
+        hp_id=hp_id,
+        caso_id=caso_id,
+        abogado_email=usuario["email"]
+    )
+
 
 @router.get("/", response_model=List[schemas.CasoJuridico])
 def listar_casos(
@@ -58,13 +75,11 @@ def listar_casos(
 ):
     validar_pertenencia_ph(usuario, hp_id)
 
-    # Propietarios SOLO ven sus propios casos jurídicos
     if usuario["role"] == "PROPIETARIO TITULAR":
         return CasosJuridicosService.obtener_casos_por_usuario(
             db, hp_id, usuario["user_id"]
         )
 
-    # Admin y abogados ven todos los casos
     validar_rol(usuario, ["ADMINISTRADOR", "ABOGADO"])
     return CasosJuridicosService.obtener_casos(db, hp_id)
 

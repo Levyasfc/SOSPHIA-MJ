@@ -116,16 +116,53 @@ class CasosJuridicosService:
         if not caso:
             raise HTTPException(status_code=404, detail="Caso jurídico no encontrado")
 
-        # Si ya tiene abogado asignado
         if caso.abogado:
             raise HTTPException(
                 status_code=400,
                 detail=f"El caso ya fue tomado por: {caso.abogado}"
             )
 
-        # Actualizar abogado y estado
         caso.abogado = abogado_email
         caso.estado = "En gestión"
+
+        db.commit()
+        db.refresh(caso)
+
+        return caso
+
+
+    @staticmethod
+    async def cerrar_caso(
+        db: Session,
+        hp_id: int,
+        caso_id: int,
+        abogado_email: str
+    ):
+        caso = db.query(models.CasoJuridico).filter_by(
+            id=caso_id,
+            hp_id=hp_id
+        ).first()
+
+        if not caso:
+            raise HTTPException(status_code=404, detail="Caso jurídico no encontrado")
+
+        # Validar que no esté ya cerrado
+        if caso.fecha_cierre is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="El caso ya se encuentra cerrado"
+            )
+
+        # Validar que tenga abogado asignado
+        if not caso.abogado:
+            raise HTTPException(
+                status_code=400,
+                detail="No se puede cerrar un caso sin un abogado asignado"
+            )
+
+        # Cambiar estado y asignar fecha de cierre
+        caso.estado = "Cerrado"
+        caso.fecha_cierre = datetime.utcnow()
 
         db.commit()
         db.refresh(caso)
