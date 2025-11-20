@@ -32,6 +32,23 @@ async def crear_caso(
         background_tasks=background_tasks
     )
 
+@router.put("/{caso_id}/tomar", response_model=schemas.CasoJuridico)
+async def tomar_caso(
+    hp_id: int,
+    caso_id: int,
+    db: Session = Depends(get_db),
+    usuario: dict = Depends(get_current_user)
+):
+    validar_pertenencia_ph(usuario, hp_id)
+    validar_rol(usuario, ["ABOGADO", "ADMINISTRADOR"])
+
+    return await CasosJuridicosService.tomar_caso(
+        db=db,
+        hp_id=hp_id,
+        caso_id=caso_id,
+        abogado_email=usuario["email"]
+    )
+
 
 @router.get("/", response_model=List[schemas.CasoJuridico])
 def listar_casos(

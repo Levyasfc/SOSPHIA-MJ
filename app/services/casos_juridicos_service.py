@@ -100,3 +100,34 @@ class CasosJuridicosService:
             background_tasks.add_task(enviar_email, data.correo_responsable, asunto, mensaje)
 
         return historial
+    
+    @staticmethod
+    async def tomar_caso(
+        db: Session,
+        hp_id: int,
+        caso_id: int,
+        abogado_email: str
+    ):
+        caso = db.query(models.CasoJuridico).filter_by(
+            id=caso_id,
+            hp_id=hp_id
+        ).first()
+
+        if not caso:
+            raise HTTPException(status_code=404, detail="Caso jurídico no encontrado")
+
+        # Si ya tiene abogado asignado
+        if caso.abogado:
+            raise HTTPException(
+                status_code=400,
+                detail=f"El caso ya fue tomado por: {caso.abogado}"
+            )
+
+        # Actualizar abogado y estado
+        caso.abogado = abogado_email
+        caso.estado = "En gestión"
+
+        db.commit()
+        db.refresh(caso)
+
+        return caso
